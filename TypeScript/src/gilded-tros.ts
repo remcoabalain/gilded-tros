@@ -8,11 +8,11 @@ class ItemHandler {
     }
 
     public throwErrorUnCorrectHandler() {
-        throw new Error(`Incorrect handler called for item ${this.item.name}`)
+        throw new Error(`Incorrect handler called for item ${this.item.name}`);
     }
 
     public update(): void {
-        throw new Error('Implement update in subclass')
+        throw new Error('Implement update in subclass');
     }
 }
 
@@ -27,9 +27,9 @@ class StandardHandler extends ItemHandler {
         }
 
         this.item.quality = Math.min(
-          Math.max(this.item.quality, this.MIN_QUALITY),
-          this.MAX_QUALITY
-        )
+            Math.max(this.item.quality, this.MIN_QUALITY),
+            this.MAX_QUALITY
+        );
     }
 }
 
@@ -52,6 +52,7 @@ class GoodWineHandler extends ItemHandler {
 
 class LegendaryHandler extends ItemHandler {
     MAX_QUALITY = 80;
+
     update() {
         if (this.item.name != 'B-DAWG Keychain') {
             this.throwErrorUnCorrectHandler();
@@ -96,7 +97,7 @@ class SmellyHandler extends ItemHandler {
             this.throwErrorUnCorrectHandler();
         }
         this.item.sellIn -= 1;
-        this.item.quality = Math.max(this.item.quality - 2, this.MIN_QUALITY)
+        this.item.quality = Math.max(this.item.quality - 2, this.MIN_QUALITY);
     }
 }
 
