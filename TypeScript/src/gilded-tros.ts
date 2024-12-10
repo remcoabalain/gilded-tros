@@ -26,7 +26,10 @@ class StandardHandler extends ItemHandler {
             this.item.quality -= 1;
         }
 
-        this.item.quality = Math.max(this.item.quality, this.MIN_QUALITY)
+        this.item.quality = Math.min(
+          Math.max(this.item.quality, this.MIN_QUALITY),
+          this.MAX_QUALITY
+        )
     }
 }
 
