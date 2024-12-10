@@ -99,57 +99,24 @@ export class GildedTros {
 
     }
 
-    public updateQuality(): void {
-        for (let i = 0; i < this.items.length; i++) {
-            if (this.items[i].name != 'Good Wine' && this.items[i].name != 'Backstage passes for Re:Factor'
-                && this.items[i].name != 'Backstage passes for HAXX') {
-                if (this.items[i].quality > 0) {
-                    if (this.items[i].name != 'B-DAWG Keychain') {
-                        this.items[i].quality = this.items[i].quality - 1;
-                    }
-                }
-            } else {
-                if (this.items[i].quality < 50) {
-                    this.items[i].quality = this.items[i].quality + 1;
-
-                    if (this.items[i].name == 'Backstage passes for Re:Factor') {
-                        if (this.items[i].sellIn < 11) {
-                            if (this.items[i].quality < 50) {
-                                this.items[i].quality = this.items[i].quality + 1;
-                            }
-                        }
-
-                        if (this.items[i].sellIn < 6) {
-                            if (this.items[i].quality < 50) {
-                                this.items[i].quality = this.items[i].quality + 1;
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (this.items[i].name != 'B-DAWG Keychain') {
-                this.items[i].sellIn = this.items[i].sellIn - 1;
-            }
-
-            if (this.items[i].sellIn < 0) {
-                if (this.items[i].name != 'Good Wine') {
-                    if (this.items[i].name != 'Backstage passes for Re:Factor' || this.items[i].name != 'Backstage passes for HAXX') {
-                        if (this.items[i].quality > 0) {
-                            if (this.items[i].name != 'B-DAWG Keychain') {
-                                this.items[i].quality = this.items[i].quality - 1;
-                            }
-                        }
-                    } else {
-                        this.items[i].quality = this.items[i].quality - this.items[i].quality;
-                    }
-                } else {
-                    if (this.items[i].quality < 50) {
-                        this.items[i].quality = this.items[i].quality + 1;
-                    }
-                }
-            }
+    private getItemHandler(item: Item) {
+        if (item.name === 'Good Wine') {
+            return new GoodWineHandler(item);
+        } else if (item.name === 'B-DAWG Keychain') {
+            return new LegendaryHandler(item);
+        } else if (['Duplicate Code', 'Long Methods', 'Ugly Variable Names'].includes(item.name)) {
+            return new SmellyHandler(item);
+        } else if (item.name.includes('Backstage passes')) {
+            return new BackStagePassesHandler(item);
         }
+        return new StandardHandler(item);
+    }
+
+    public updateQuality(): void {
+        this.items.forEach((item: Item) => {
+            const handler = this.getItemHandler(item);
+            handler.update();
+        })
     }
 
 }
