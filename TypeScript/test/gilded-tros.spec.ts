@@ -171,5 +171,17 @@ describe('GildedTrosTest', () => {
       expect(app.items[2].sellIn).toEqual(9);
       expect(app.items[2].quality).toEqual(18);
     })
+
+    it('should never decrease item quality past zero', () => {
+      const items: Item[] = [
+        new Item('Duplicate Code', 7, 0),
+      ]
+
+      const app: GildedTros = new GildedTros(items);
+      app.updateQuality();
+
+      expect(app.items[0].sellIn).toEqual(6);
+      expect(app.items[0].quality).toEqual(0)
+    })
   });
 });
