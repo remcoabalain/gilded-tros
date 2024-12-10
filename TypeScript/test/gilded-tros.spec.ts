@@ -78,6 +78,16 @@ describe('GildedTrosTest', () => {
   });
 
   describe('Backstage passes', () => {
+    it ('should increase quality by 1 if sell bigger than 10', () => {
+      const items: Item[] = [
+        new Item('Backstage passes for Re:Factor', 11, 20),
+      ]
+      const app: GildedTros = new GildedTros(items);
+      app.updateQuality();
+      expect(app.items[0].sellIn).toEqual(10);
+      expect(app.items[0].quality).toEqual(21);
+    });
+
     it('should increase quality by 2 if sell in between 6 and 10', () => {
       const items: Item[] = [
         new Item('Backstage passes for Re:Factor', 10, 20),
