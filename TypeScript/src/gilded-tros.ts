@@ -46,7 +46,6 @@ class GoodWineHandler extends ItemHandler {
             this.item.quality += 1;
         }
 
-
         this.item.quality = Math.min(this.item.quality, this.MAX_QUALITY);
     }
 }
@@ -70,17 +69,22 @@ class BackStagePassesHandler extends ItemHandler {
             this.throwErrorUnCorrectHandler()
         }
 
-        this.item.sellIn -= 1;
-
         if (this.item.sellIn > 10) {
             this.item.quality += 1;
         } else if (this.item.sellIn <= 10 && this.item.sellIn > 5) {
             this.item.quality += 2;
-        } else if (this.item.sellIn <= 5 && this.item.sellIn >= 0) {
+        } else if (this.item.sellIn <= 5 && this.item.sellIn > 0) {
             this.item.quality += 3;
         } else {
             this.item.quality = 0;
         }
+
+        /**
+         * TODO in the old code the sell in checks for quality mutations are before the sell in mutation,
+         * while for Good Wine, the second increase of quality is after the sellIn mutation..
+         * which makes the tests react differently for these two cases. Moved the mutation for Backstage for now.
+         */
+        this.item.sellIn -= 1;
 
         this.item.quality = Math.min(this.item.quality, this.MAX_QUALITY);
     }
@@ -121,6 +125,5 @@ export class GildedTros {
             handler.update();
         })
     }
-
 }
 
