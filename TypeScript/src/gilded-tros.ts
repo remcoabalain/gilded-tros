@@ -107,17 +107,36 @@ export class GildedTros {
 
     }
 
-    private getItemHandler(item: Item) {
-        if (item.name === 'Good Wine') {
-            return new GoodWineHandler(item);
-        } else if (item.name === 'B-DAWG Keychain') {
-            return new LegendaryHandler(item);
-        } else if (['Duplicate Code', 'Long Methods', 'Ugly Variable Names'].includes(item.name)) {
-            return new SmellyHandler(item);
-        } else if (item.name.includes('Backstage passes')) {
-            return new BackStagePassesHandler(item);
+    private readonly itemHandlerMapping: {
+        isMatch: (name: string) => boolean,
+        handler: typeof ItemHandler,
+    }[] = [
+        {
+            isMatch: (name: string) => name === 'Good Wine',
+            handler: GoodWineHandler,
+        },
+        {
+            isMatch: (name: string) => name === 'B-DAWG Keychain',
+            handler: LegendaryHandler,
+        },
+        {
+            isMatch: (name: string) => ['Duplicate Code', 'Long Methods', 'Ugly Variable Names'].includes(name),
+            handler: SmellyHandler,
+        },
+        {
+            isMatch: (name: string) => name.includes('Backstage passes'),
+            handler: BackStagePassesHandler,
+        },
+    ]
+
+    private getItemHandler(item: Item): ItemHandler {
+        const foundHandler = this.itemHandlerMapping.find(({isMatch}) => isMatch(item.name));
+
+        if (!foundHandler) {
+            return new StandardHandler(item);
         }
-        return new StandardHandler(item);
+
+        return new foundHandler.handler(item);
     }
 
     public updateQuality(): void {
