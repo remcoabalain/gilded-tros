@@ -1,8 +1,8 @@
 import {Item} from './item';
 
 class ItemHandler {
-    MIN_QUALITY = 0;
-    MAX_QUALITY = 50;
+    public readonly MIN_QUALITY: number = 0;
+    public readonly MAX_QUALITY: number = 50;
 
     constructor(public item: Item) {
     }
@@ -51,7 +51,7 @@ class GoodWineHandler extends ItemHandler {
 }
 
 class LegendaryHandler extends ItemHandler {
-    MAX_QUALITY = 80;
+    public readonly MAX_QUALITY: number = 80;
 
     update() {
         if (this.item.name != 'B-DAWG Keychain') {
