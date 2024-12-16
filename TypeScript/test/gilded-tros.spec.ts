@@ -1,5 +1,9 @@
 import {Item} from '../src/item';
-import {GildedTros} from '../src/gilded-tros';
+import {
+    BackStagePassesHandler,
+    GildedTros, GoodWineHandler, LegendaryHandler, SmellyHandler,
+
+} from '../src/gilded-tros';
 
 describe('GildedTrosTest', () => {
     describe('Standard drinks', () => {
@@ -184,4 +188,70 @@ describe('GildedTrosTest', () => {
             expect(app.items[0].quality).toEqual(0)
         })
     });
+
+    describe('Handler tests', () => {
+        it('should allow GoodWineHandler to handle "Good Wine"', () => {
+            const item = new Item('Good Wine', 10, 20);
+            const handler = new GoodWineHandler(item);
+
+            expect(() => handler.canHandleItem()).not.toThrow();
+        });
+
+        it('should throw an error when GoodWineHandler handles "Fine Wine"', () => {
+            const item = new Item('Fine Wine', 10, 20);
+            const handler = new GoodWineHandler(item);
+
+            expect(() => handler.canHandleItem()).toThrow(
+                'Incorrect handler called for item Fine Wine'
+            );
+        });
+
+        it('should allow LegendaryHandler to handle "B-DAWG Keychain"', () => {
+            const item = new Item('B-DAWG Keychain', 10, 80);
+            const handler = new LegendaryHandler(item);
+
+            expect(() => handler.canHandleItem()).not.toThrow();
+        });
+
+        it('should throw an error when LegendaryHandler handles "Fine Wine"', () => {
+            const item = new Item('Fine Wine', 10, 20);
+            const handler = new LegendaryHandler(item);
+
+            expect(() => handler.canHandleItem()).toThrow(
+                'Incorrect handler called for item Fine Wine'
+            );
+        });
+
+        it('should allow SmellyHandler to handle "Duplicate Code"', () => {
+            const item = new Item('Duplicate Code', 5, 30);
+            const handler = new SmellyHandler(item);
+
+            expect(() => handler.canHandleItem()).not.toThrow();
+        });
+
+        it('should throw an error when SmellyHandler handles "Fine Wine"', () => {
+            const item = new Item('Fine Wine', 10, 20);
+            const handler = new SmellyHandler(item);
+
+            expect(() => handler.canHandleItem()).toThrow(
+                'Incorrect handler called for item Fine Wine'
+            );
+        });
+
+        it('should allow BackStagePassesHandler to handle "Backstage passes for Re:Factor"', () => {
+            const item = new Item('Backstage passes for Re:Factor', 15, 20);
+            const handler = new BackStagePassesHandler(item);
+
+            expect(() => handler.canHandleItem()).not.toThrow();
+        });
+
+        it('should throw an error when BackStagePassesHandler handles "Fine Wine"', () => {
+            const item = new Item('Fine Wine', 10, 20);
+            const handler = new BackStagePassesHandler(item);
+
+            expect(() => handler.canHandleItem()).toThrow(
+                'Incorrect handler called for item Fine Wine'
+            );
+        });
+    })
 });

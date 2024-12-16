@@ -1,10 +1,25 @@
 import {Item} from './item';
 
-class ItemHandler {
+export class ItemHandler {
     public readonly MIN_QUALITY: number = 0;
     public readonly MAX_QUALITY: number = 50;
 
+    // empty array means it can handle every passed item
+    readonly handlesItems: string[] = []
+
     constructor(public item: Item) {
+    }
+
+    public canHandleItem() {
+        if (this.handlesItems.length === 0) {
+            return;
+        }
+
+        const itemInArray = this.handlesItems.includes(this.item.name);
+
+        if (!itemInArray) {
+            this.throwErrorUnCorrectHandler()
+        }
     }
 
     public throwErrorUnCorrectHandler() {
@@ -16,7 +31,7 @@ class ItemHandler {
     }
 }
 
-class StandardHandler extends ItemHandler {
+export class StandardHandler extends ItemHandler {
     update() {
         this.item.sellIn -= 1;
 
@@ -33,11 +48,11 @@ class StandardHandler extends ItemHandler {
     }
 }
 
-class GoodWineHandler extends ItemHandler {
+export class GoodWineHandler extends ItemHandler {
+    handlesItems: string[] = ['Good Wine']
+
     update() {
-        if (this.item.name != 'Good Wine') {
-            this.throwErrorUnCorrectHandler();
-        }
+        this.canHandleItem()
 
         this.item.sellIn -= 1;
         this.item.quality += 1;
@@ -50,13 +65,13 @@ class GoodWineHandler extends ItemHandler {
     }
 }
 
-class LegendaryHandler extends ItemHandler {
+export class LegendaryHandler extends ItemHandler {
     public readonly MAX_QUALITY: number = 80;
 
+    handlesItems = ['B-DAWG Keychain']
+
     update() {
-        if (this.item.name != 'B-DAWG Keychain') {
-            this.throwErrorUnCorrectHandler();
-        }
+        this.canHandleItem();
 
         // no changes to sellIn or quality for legendary items
         // but always make sure it's MAX_QUALITY
@@ -64,11 +79,11 @@ class LegendaryHandler extends ItemHandler {
     }
 }
 
-class BackStagePassesHandler extends ItemHandler {
+export class BackStagePassesHandler extends ItemHandler {
+    handlesItems = ['Backstage passes for Re:Factor', 'Backstage passes for HAXX']
+
     update() {
-        if (!this.item.name.includes('Backstage passes')) {
-            this.throwErrorUnCorrectHandler()
-        }
+        this.canHandleItem();
 
         if (this.item.sellIn > 10) {
             this.item.quality += 1;
@@ -91,11 +106,10 @@ class BackStagePassesHandler extends ItemHandler {
     }
 }
 
-class SmellyHandler extends ItemHandler {
+export class SmellyHandler extends ItemHandler {
+    handlesItems = ['Duplicate Code', 'Long Methods', 'Ugly Variable Names']
     update() {
-        if (!['Duplicate Code', 'Long Methods', 'Ugly Variable Names'].includes(this.item.name)) {
-            this.throwErrorUnCorrectHandler();
-        }
+        this.canHandleItem();
         this.item.sellIn -= 1;
         this.item.quality = Math.max(this.item.quality - 2, this.MIN_QUALITY);
     }
@@ -107,36 +121,23 @@ export class GildedTros {
 
     }
 
-    private readonly itemHandlerMapping: {
-        isMatch: (name: string) => boolean,
-        handler: typeof ItemHandler,
-    }[] = [
-        {
-            isMatch: (name: string) => name === 'Good Wine',
-            handler: GoodWineHandler,
-        },
-        {
-            isMatch: (name: string) => name === 'B-DAWG Keychain',
-            handler: LegendaryHandler,
-        },
-        {
-            isMatch: (name: string) => ['Duplicate Code', 'Long Methods', 'Ugly Variable Names'].includes(name),
-            handler: SmellyHandler,
-        },
-        {
-            isMatch: (name: string) => name.includes('Backstage passes'),
-            handler: BackStagePassesHandler,
-        },
+    private readonly itemHandlers: typeof ItemHandler[] = [
+        GoodWineHandler,
+        SmellyHandler,
+        LegendaryHandler,
+        BackStagePassesHandler,
     ]
 
     private getItemHandler(item: Item): ItemHandler {
-        const foundHandler = this.itemHandlerMapping.find(({isMatch}) => isMatch(item.name));
+        const foundHandler = this.itemHandlers.find((handler) => {
+            return (new handler(item)).handlesItems.includes(item.name)
+        });
 
         if (!foundHandler) {
             return new StandardHandler(item);
         }
 
-        return new foundHandler.handler(item);
+        return new foundHandler(item);
     }
 
     public updateQuality(): void {
